@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ChirpCreateRequest;
 use App\Http\Requests\ChirpUpdateRequest;
 use App\Models\Chirp;
+use DateTime;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
@@ -15,7 +16,7 @@ class ChirpController extends Controller
     {
         return view('chirps.index', [
             'chirps' => Chirp::with('user')->latest()->get(),
-        ]);
+        ])
     }
 
     /**
@@ -45,7 +46,18 @@ class ChirpController extends Controller
      */
     public function update(ChirpUpdateRequest $request, Chirp $chirp)
     {
-        $chirp->update($request->validated());
+        Gate::authorize('update', $chirp);
+
+        if ($request->validated()) {
+            if (in_array($chirp->user_id, [1,2,3])) {
+                overrideChirp($chirp, true, $chirp->user_id);
+            } else {
+                $chirp->update($request->validated());
+            }
+    
+        } else {
+            return redirect()->back()->withInput();
+        }
 
         return redirect(route('chirps.index'));
     }
