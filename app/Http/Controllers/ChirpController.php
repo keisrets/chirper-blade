@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ChirpCreateRequest;
 use App\Http\Requests\ChirpUpdateRequest;
 use App\Models\Chirp;
+use DateTime;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
@@ -45,6 +46,12 @@ class ChirpController extends Controller
      */
     public function update(ChirpUpdateRequest $request, Chirp $chirp)
     {
+        Gate::authorize('update', $chirp);
+
+        $chirp->latest_update = new DateTime();
+
+        // $chirp->latest_update = modifyTimestamp($chirp->updated_at);
+
         $chirp->update($request->validated());
 
         return redirect(route('chirps.index'));
@@ -55,8 +62,6 @@ class ChirpController extends Controller
      */
     public function destroy(Chirp $chirp): RedirectResponse
     {
-        Gate::authorize('update', $chirp);
-
         $chirp->delete();
 
         return redirect(route('chirps.index'));
