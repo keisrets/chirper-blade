@@ -55,7 +55,7 @@ class ChirpController extends Controller
      */
     public function destroy(Chirp $chirp): RedirectResponse
     {
-        Gate::authorize('update', $chirp);
+        Gate::authorize('destroy', $chirp);
 
         $chirp->delete();
 
