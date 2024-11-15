@@ -21,4 +21,9 @@ class ChirpPolicy
     {
         return $chirp->user()->is($user);
     }
+
+    public function destroy(User $user, Chirp $chirp): bool
+    {
+        return $chirp->user()->is($user);
+    }
 }
